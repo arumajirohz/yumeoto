@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="description" content="YUMEOTO — Minimal offline ambient sound player built for focus and calm.">
+<meta name="theme-color" content="#0f0c13">
+
+<title>YUMEOTO — Deep Space Engine</title>
+
+<style>
+:root {
+  --bg: #0f0c13;
+  --card: #1f1a24;
+  --muted: #bfb6c9;
+  --accent: #A18BFF;
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  touch-action: manipulation;
+}
+
+body {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  /* Deep space radial gradient */
+  background: radial-gradient(circle at center top, #1a1423 0%, #0f0c13 80%);
+  background-attachment: fixed;
+  color: var(--muted);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 90px; /* Mobile comfort padding */
+}
+
+header {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo svg { width: 36px; height: 36px; fill: #fff; }
+.logo-title { font-size: 20px; color: #fff; font-weight: 600; letter-spacing: -0.5px; }
+
+/* Subtle equalizer animation */
+@keyframes eq {
+  0% { height: 6px; y: 11px; }
+  50% { height: 16px; y: 1px; }
+  100% { height: 10px; y: 7px; }
+}
+body.is-playing .logo rect:nth-child(1) { animation: eq 1s infinite alternate ease-in-out; }
+body.is-playing .logo rect:nth-child(2) { animation: eq 1.2s infinite alternate-reverse ease-in-out; }
+body.is-playing .logo rect:nth-child(3) { animation: eq 0.8s infinite alternate ease-in-out; }
+
+main {
+  flex: 1;
+  padding: 12px;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+h2 {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  margin: 24px 8px 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.7;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: var(--radius);
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .3s ease, background-color .2s;
+}
+
+.card:active { transform: scale(.98); }
+.card.active {
+  border-color: var(--accent);
+  background: #2a2430;
+  box-shadow: 0 8px 24px rgba(161, 139, 255, 0.12);
+}
+
+.icon svg { width: 32px; height: 32px; fill: var(--muted); opacity: .8; transition: fill .2s, opacity .2s; }
+.card.active .icon svg { fill: #fff; opacity: 1; }
+
+.title { font-size: 15px; color: #fff; font-weight: 600; margin-bottom: 4px; }
+.desc { font-size: 12px; color: var(--muted); opacity: .7; line-height: 1.3; }
+
+.volume-wrap {
+  opacity: .4;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity .2s;
+}
+
+.card.active .volume-wrap {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  width: 100%;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform .1s;
+}
+input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+
+.controls {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 28px;
+  background: rgba(31, 26, 36, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 8px 16px 8px 8px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.05);
+  z-index: 100;
+}
+
+.status {
+  min-width: 90px;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.fab:active { transform: scale(0.9); }
+.fab svg { width: 22px; height: 22px; fill: currentColor; }
+
+.playing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: none;
+  margin-right: 10px;
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s infinite ease-in-out;
+}
+body.is-playing .playing-dot { display: inline-block; }
+
+@keyframes pulse {
+  0% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.footer {
+  padding: 24px;
+  text-align: center;
+  color: #5a5463;
+  font-size: 12px;
+  margin-top: auto;
+  font-weight: 500;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="7" width="4" height="10" rx="2"/>
+      <rect x="10" y="4" width="4" height="16" rx="2"/>
+      <rect x="17" y="9" width="4" height="6" rx="2"/>
+    </svg>
+  </div>
+  <div class="logo-title">YUMEOTO</div>
+</header>
+
+<main>
+  <h2>Atmosphere Engine</h2>
+  <div class="grid">
+    
+    <!-- White Noise Card -->
+    <div class="card" data-sound="white">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 4-12 3 14 2-6h1"/></svg>
+      </div>
+      <div>
+        <div class="title">White Noise</div>
+        <div class="desc">Filtered static mask</div>
+      </div>
+      <div class="volume-wrap">
+        <input type="range" min="0" max="1" step="0.01" value="0.3" class="vol-slider">
+      </div>
+    </div>
+
+    <!-- Pink Noise Card -->
+    <div class="card" data-sound="pink">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M4 12c4-8 8 8 12 0s4 0 4 0"/></svg>
+      </div>
+      <div>
+        <div class="title">Pink Noise</div>
+        <div class="desc">Soft natural rain</div>
+      </div>
+      <div class="volume-wrap">
+        <input type="range" min="0" max="1" step="0.01" value="0.5" class="vol-slider">
+      </div>
+    </div>
+
+    <!-- Brown Noise Card -->
+    <div class="card" data-sound="brown">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M2 18c6-12 10-2 14-8s6-2 6-2"/></svg>
+      </div>
+      <div>
+        <div class="title">Brown Noise</div>
+        <div class="desc">Deep space rumble</div>
+      </div>
+      <div class="volume-wrap">
+        <input type="range" min="0" max="1" step="0.01" value="0.6" class="vol-slider">
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="controls">
+  <button class="fab" id="master-play">
+    <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    <svg id="stop-icon" viewBox="0 0 24 24" style="display:none;"><path d="M6 6h12v12H6z"/></svg>
+  </button>
+  <div class="status">
+    <span class="playing-dot"></span>
+    <span id="status-text">Idle</span>
+  </div>
+</div>
+
+<footer class="footer">
+  YUMEOTO — Minimal ambient engine for low-CPU devices.
+</footer>
+
+<script>
+/**
+ * YUMEOTO AUDIO ENGINE v2.0 (Space Hum Edition)
+ * Architecture: Source -> Filter -> Gain -> Master -> Dest
+ * Features: LFO Breathing, Smooth Ramps, 10s Buffers
+ */
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+let masterGain;
+const sounds = {};
+let isEngineRunning = false;
+
+// Initialize Audio Context on first interaction
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new AudioContext();
+  
+  // Master Gain for global volume control
+  masterGain = audioCtx.createGain();
+  masterGain.connect(audioCtx.destination);
+
+  // Initialize Generators
+  sounds.white = new NoiseGenerator('white');
+  sounds.pink = new NoiseGenerator('pink');
+  sounds.brown = new NoiseGenerator('brown');
+}
+
+// Generate 10 seconds of noise buffer to reduce loop artifacts
+function createNoiseBuffer(type) {
+  const bufferSize = audioCtx.sampleRate * 10; 
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const output = buffer.getChannelData(0);
+
+  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+  let lastOut = 0;
+
+  for (let i = 0; i < bufferSize; i++) {
+    let white = Math.random() * 2 - 1;
+
+    if (type === 'white') {
+      output[i] = white * 0.1; // Baseline volume
+    } 
+    else if (type === 'pink') {
+      // Paul Kellet's Refined Method
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      output[i] *= 0.11; // Compensation
+      b6 = white * 0.115926;
+    } 
+    else if (type === 'brown') {
+      // Leaky Integrator
+      output[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = output[i];
+      output[i] *= 0.4; // CRITICAL FIX: Attenuate to prevent clipping/mud
+    }
+  }
+  return buffer;
+}
+
+class NoiseGenerator {
+  constructor(type) {
+    this.type = type;
+    this.buffer = createNoiseBuffer(type);
+    this.source = null;
+    
+    // 1. Input Node (Pre-Filter)
+    this.inputNode = audioCtx.createGain();
+    
+    // 2. Filter Node (Tone Shaping)
+    this.filter = audioCtx.createBiquadFilter();
+    this.setupFilter();
+
+    // 3. Gain Node (Volume)
+    this.gainNode = audioCtx.createGain();
+    this.gainNode.gain.value = 0; // Start muted
+
+    // 4. LFO (Breathing Effect)
+    this.lfo = audioCtx.createOscillator();
+    this.lfoGain = audioCtx.createGain();
+    this.setupLFO();
+
+    // Connect Graph: Input -> Filter -> Gain -> Master
+    this.inputNode.connect(this.filter);
+    this.filter.connect(this.gainNode);
+    this.gainNode.connect(masterGain);
+
+    // Connect LFO to Gain (Modulation)
+    this.lfo.connect(this.lfoGain);
+    this.lfoGain.connect(this.gainNode.gain);
+
+    this.isActive = false;
+    this.savedVolume = 0.5; // Default volume
+  }
+
+  setupFilter() {
+    if (this.type === 'white') {
+      // Highpass to remove harsh low-mid hiss
+      this.filter.type = 'highpass';
+      this.filter.frequency.value = 200;
+    } else if (this.type === 'pink') {
+      // Lowshelf for warmth
+      this.filter.type = 'lowshelf';
+      this.filter.frequency.value = 250;
+      this.filter.gain.value = 2;
+    } else if (this.type === 'brown') {
+      // Lowpass to make it deep and "spacey"
+      this.filter.type = 'lowpass';
+      this.filter.frequency.value = 500;
+    }
+  }
+
+  setupLFO() {
+    this.lfo.type = 'sine';
+    this.lfo.frequency.value = 0.08; // Very slow breathe (approx 12s cycle)
+    this.lfoGain.gain.value = 0.03;  // Subtle depth
+    this.lfo.start();
+  }
+
+  start() {
+    // FIX: Stop existing source cleanly before starting new one
+    if (this.source) {
+      try { this.source.stop(); } catch(e){}
+      this.source.disconnect();
+    }
+
+    this.source = audioCtx.createBufferSource();
+    this.source.buffer = this.buffer;
+    this.source.loop = true;
+    this.source.connect(this.inputNode);
+    this.source.start();
+  }
+
+  stop() {
+    if (this.source) {
+      // Ramp down locally before stopping for extra smoothness
+      try {
+        this.source.stop();
+        this.source.disconnect();
+      } catch(e) {}
+      this.source = null;
+    }
+  }
+
+  activate() {
+    this.isActive = true;
+    if (isEngineRunning) {
+      // Smooth Fade In
+      this.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, audioCtx.currentTime);
+      this.gainNode.gain.linearRampToValueAtTime(this.savedVolume, audioCtx.currentTime + 1.5);
+    }
+  }
+
+  deactivate() {
+    this.isActive = false;
+    // Smooth Fade Out
+    this.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, audioCtx.currentTime);
+    this.gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+  }
+
+  setVolume(val) {
+    this.savedVolume = val;
+    if (this.isActive && isEngineRunning) {
+      // Immediate but smooth volume change
+      this.gainNode.gain.setTargetAtTime(val, audioCtx.currentTime, 0.1);
+    }
+  }
+}
+
+// --- UI & INTERACTION LOGIC ---
+const cards = document.querySelectorAll('.card');
+const masterBtn = document.getElementById('master-play');
+const playIcon = document.getElementById('play-icon');
+const stopIcon = document.getElementById('stop-icon');
+const statusText = document.getElementById('status-text');
+
+cards.forEach(card => {
+  // Set initial slider values from HTML
+  const slider = card.querySelector('.vol-slider');
+  const type = card.dataset.sound;
+  
+  card.addEventListener('click', (e) => {
+    if (e.target.tagName.toLowerCase() === 'input') return;
+
+    initAudio(); 
+    const sound = sounds[type];
+    
+    // Sync slider value on first init
+    if (sound.savedVolume !== parseFloat(slider.value)) {
+      sound.savedVolume = parseFloat(slider.value);
+    }
+
+    if (card.classList.contains('active')) {
+      card.classList.remove('active');
+      sound.deactivate();
+    } else {
+      card.classList.add('active');
+      sound.activate();
+      if (!isEngineRunning) toggleMasterPlay(); 
+    }
+    updateStatus();
+  });
+
+  slider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    if (sounds[type]) {
+      sounds[type].setVolume(val);
+    }
+  });
+});
+
+masterBtn.addEventListener('click', () => {
+  initAudio();
+  toggleMasterPlay();
+});
+
+async function toggleMasterPlay() {
+  // CRITICAL FIX: Handle suspended context
+  if (audioCtx.state === 'suspended') {
+    await audioCtx.resume();
+  }
+
+  isEngineRunning = !isEngineRunning;
+  
+  if (isEngineRunning) {
+    // Start Engine
+    Object.values(sounds).forEach(s => {
+      s.start();
+      if (s.isActive) {
+        // Fade in active sounds
+        s.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+        s.gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        s.gainNode.gain.linearRampToValueAtTime(s.savedVolume, audioCtx.currentTime + 1.0);
+      }
+    });
+    document.body.classList.add('is-playing');
+    playIcon.style.display = 'none';
+    stopIcon.style.display = 'block';
+  } else {
+    // Stop Engine
+    Object.values(sounds).forEach(s => {
+      // Fade out everything
+      s.gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+      s.gainNode.gain.setValueAtTime(s.gainNode.gain.value, audioCtx.currentTime);
+      s.gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+      
+      setTimeout(() => s.stop(), 350);
+    });
+    document.body.classList.remove('is-playing');
+    playIcon.style.display = 'block';
+    stopIcon.style.display = 'none';
+  }
+  updateStatus();
+}
+
+function updateStatus() {
+  const activeCount = document.querySelectorAll('.card.active').length;
+  if (!isEngineRunning) {
+    statusText.innerText = "Idle";
+  } else {
+    statusText.innerText = activeCount > 0 ? "Playing" : "Select Sound";
+  }
+}
+</script>
+
+</body>
+</html>
+
+
