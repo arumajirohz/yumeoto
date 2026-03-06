@@ -1,11 +1,95 @@
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-    <title>Yumeoto</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yumeoto - Deep Space</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0a0a0c;
+            color: #708090;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #glow {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a1a2e 0%, #000 70%);
+            box-shadow: 0 0 20px #1a1a2e;
+            transition: all 2s ease-in-out;
+            cursor: pointer;
+        }
+        .active {
+            box-shadow: 0 0 50px #483d8b !important;
+            transform: scale(1.05);
+        }
+        p { margin-top: 20px; font-size: 0.8rem; letter-spacing: 2px; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Yumeoto</h1>
-    <p>This is the full offline-compatible YUMEOTO application.</p>
-    <script src="app.js"></script>
+
+    <div id="glow" onclick="toggleAudio()"></div>
+    <p id="status">STANDBY</p>
+
+    <script>
+        let audioCtx;
+        let biquadFilter;
+        let isPlaying = false;
+
+        function createNoise() {
+            const bufferSize = 2 * audioCtx.sampleRate,
+            noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
+            output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+            return whiteNoise;
+        }
+
+        function toggleAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (!isPlaying) {
+                // Brown Noise setup (Deep Space Hum)
+                const source = createNoise();
+                biquadFilter = audioCtx.createBiquadFilter();
+                biquadFilter.type = "lowpass";
+                biquadFilter.frequency.setValueAtTime(400, audioCtx.currentTime);
+
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 2);
+
+                source.connect(biquadFilter);
+                biquadFilter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                source.start();
+                document.getElementById('glow').classList.add('active');
+                document.getElementById('status').innerText = "VOYAGING";
+                isPlaying = true;
+            } else {
+                audioCtx.close().then(() => {
+                    audioCtx = null;
+                    document.getElementById('glow').classList.remove('active');
+                    document.getElementById('status').innerText = "STANDBY";
+                    isPlaying = false;
+                });
+            }
+        }
+    </script>
 </body>
 </html>
