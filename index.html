@@ -1,95 +1,104 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yumeoto - Deep Space</title>
-    <style>
-        body {
-            margin: 0;
-            background: #0a0a0c;
-            color: #708090;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-        #glow {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #1a1a2e 0%, #000 70%);
-            box-shadow: 0 0 20px #1a1a2e;
-            transition: all 2s ease-in-out;
-            cursor: pointer;
-        }
-        .active {
-            box-shadow: 0 0 50px #483d8b !important;
-            transform: scale(1.05);
-        }
-        p { margin-top: 20px; font-size: 0.8rem; letter-spacing: 2px; }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>YUMEOTO — Offline Audio (Light)</title>
+<style>
+:root{--bg:#0f0c13;--card:#1f1a24;--muted:#bfb6c9;--accent:#A18BFF;--radius:18px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html, body{touch-action: manipulation;}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--muted);min-height:100vh;display:flex;flex-direction:column;}
+header{padding:18px;display:flex;align-items:center;gap:12px;}
+.logo svg{width:36px;height:36px;fill:var(--accent)}
+.logo-title{font-size:20px;color:#fff;font-weight:600}
+main{flex:1;padding:12px;max-width:920px;margin:0 auto;width:100%;}
+h2{color:var(--accent);font-size:12px;margin:18px 8px;text-transform:uppercase;letter-spacing:1px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.card{background:var(--card);padding:14px;border-radius:var(--radius);height:170px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;border:2px solid transparent;transition:transform .12s ease, border-color .12s ease;}
+.card:active{transform:scale(.99)}
+.card.active{border-color:var(--accent);background:#362f44}
+.title{font-size:15px;color:#fff;font-weight:600}
+.desc{font-size:12px;color:var(--muted);opacity:.9}
+.volume-wrap{opacity:.55;pointer-events:none;display:flex;align-items:center;gap:8px;}
+.card.active .volume-wrap{opacity:1;pointer-events:auto;}
+input[type=range]{-webkit-appearance:none;height:6px;background:#2b2433;border-radius:999px;width:100%;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);}
+.footer{padding:18px;text-align:center;color:#8f86a0;font-size:13px;}
+</style>
 </head>
 <body>
+<header>
+  <div class="logo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="3" height="10"/><rect x="9" y="4" width="3" height="13"/><rect x="15" y="10" width="3" height="7"/></svg></div>
+  <div class="logo-title">YUMEOTO</div>
+</header>
 
-    <div id="glow" onclick="toggleAudio()"></div>
-    <p id="status">STANDBY</p>
+<main>
+  <h2>Pure Noise</h2>
+  <div class="grid">
+    <div class="card" onclick="toggleSound('brown', this)">
+      <div><div class="title">Brown Noise</div><div class="desc">Deep & Bassy</div></div>
+      <div class="volume-wrap"><input type="range" min="0" max="1" step="0.01" value="0.5" onclick="event.stopPropagation()" oninput="updateVol('brown', this.value)"></div>
+    </div>
+    <div class="card" onclick="toggleSound('pink', this)">
+      <div><div class="title">Pink Noise</div><div class="desc">Natural Balance</div></div>
+      <div class="volume-wrap"><input type="range" min="0" max="1" step="0.01" value="0.5" onclick="event.stopPropagation()" oninput="updateVol('pink', this.value)"></div>
+    </div>
+  </div>
+  
+  <h2>Atmosphere</h2>
+  <div class="grid">
+    <div class="card" onclick="toggleSound('rain', this)">
+      <div><div class="title">Jungle Rain</div><div class="desc">Soft Rainfall</div></div>
+      <div class="volume-wrap"><input type="range" min="0" max="1" step="0.01" value="0.5" onclick="event.stopPropagation()" oninput="updateVol('rain', this.value)"></div>
+    </div>
+  </div>
+</main>
 
-    <script>
-        let audioCtx;
-        let biquadFilter;
-        let isPlaying = false;
+<footer class="footer">
+  YUMEOTO — offline mode (light). [span_3](start_span)Optimized for low-CPU devices.[span_3](end_span)
+</footer>
 
-        function createNoise() {
-            const bufferSize = 2 * audioCtx.sampleRate,
-            noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
-            output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
-            }
+<script>
+let ctx, nodes = {};
 
-            const whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = noiseBuffer;
-            whiteNoise.loop = true;
-            return whiteNoise;
-        }
+function initCtx() { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); }
 
-        function toggleAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+function createNoise(type) {
+  const bufferSize = 2 * ctx.sampleRate, buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate), data = buffer.getChannelData(0);
+  let lastOut = 0.0;
+  for (let i = 0; i < bufferSize; i++) {
+    let white = Math.random() * 2 - 1;
+    if (type === 'brown') { data[i] = (lastOut + (0.02 * white)) / 1.002; lastOut = data[i]; data[i] *= 3.5; }
+    else if (type === 'pink') { data[i] = (lastOut + (0.02 * white)) / 1.02; lastOut = data[i]; data[i] *= 3.5; }
+    else { data[i] = white; }
+  }
+  const source = ctx.createBufferSource(); source.buffer = buffer; source.loop = true;
+  return source;
+}
 
-            if (!isPlaying) {
-                // Brown Noise setup (Deep Space Hum)
-                const source = createNoise();
-                biquadFilter = audioCtx.createBiquadFilter();
-                biquadFilter.type = "lowpass";
-                biquadFilter.frequency.setValueAtTime(400, audioCtx.currentTime);
+function toggleSound(type, el) {
+  initCtx();
+  if (nodes[type]) {
+    nodes[type].source.stop();
+    delete nodes[type];
+    el.classList.remove('active');
+  } else {
+    const source = createNoise(type === 'rain' ? 'brown' : type);
+    const gain = ctx.createGain();
+    gain.gain.value = 0.5;
+    if (type === 'rain') {
+        const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 1000;
+        source.connect(filter); filter.connect(gain);
+    } else { source.connect(gain); }
+    gain.connect(ctx.destination);
+    source.start();
+    nodes[type] = { source, gain };
+    el.classList.add('active');
+  }
+}
 
-                const gainNode = audioCtx.createGain();
-                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 2);
-
-                source.connect(biquadFilter);
-                biquadFilter.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                source.start();
-                document.getElementById('glow').classList.add('active');
-                document.getElementById('status').innerText = "VOYAGING";
-                isPlaying = true;
-            } else {
-                audioCtx.close().then(() => {
-                    audioCtx = null;
-                    document.getElementById('glow').classList.remove('active');
-                    document.getElementById('status').innerText = "STANDBY";
-                    isPlaying = false;
-                });
-            }
-        }
-    </script>
+function updateVol(type, val) { if (nodes[type]) nodes[type].gain.gain.value = val; }
+</script>
 </body>
 </html>
