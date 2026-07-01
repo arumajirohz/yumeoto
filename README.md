@@ -147,6 +147,7 @@ Built for deep work sessions, long study blocks, and late-night calm.
 yumeoto/
 ├── index.html          # Complete app (HTML + CSS + JS)
 ├── README.md           # This file
+├── LICENSE             # GPLv3 License
 └── .github/workflows/  # GitHub Pages deployment (optional)
 ```
 
@@ -201,9 +202,16 @@ You can fork and modify the application easily:
 
 ## 📄 License
 
-MIT License © 2026 Jaydev Devkate
+GNU General Public License v3 (GPLv3) © 2026 Jaydev Mahesh Devkate
 
-Feel free to use, modify, and distribute this project. Attribution is appreciated but not required.
+This project is free and open-source software. You are free to use, modify, and distribute it under the terms of the GPLv3 license.
+
+**Key obligations:**
+- Any modified versions must also be released under GPLv3
+- Source code must be made available to recipients
+- License and copyright notice must be included with distributions
+
+For the complete license text, see the [LICENSE](LICENSE) file or visit https://www.gnu.org/licenses/gpl-3.0.html
 
 ---
 
