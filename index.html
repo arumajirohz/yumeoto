@@ -574,6 +574,16 @@
       line-height: 1.6;
     }
 
+    .modal-content a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .modal-content a:hover {
+      text-decoration: underline;
+    }
+
     .close-modal {
       background: linear-gradient(135deg, var(--accent), #b8a6ff);
       color: #0d0a10;
@@ -702,9 +712,6 @@
       <div class="preset-chip" onclick="applyPreset('relaxation')">Relaxation</div>
       <div class="preset-chip" onclick="applyPreset('meditation')">Meditation</div>
       <div class="preset-chip" onclick="applyPreset('sleep')">Sleep</div>
-      <div class="preset-chip" onclick="applyPreset('nature')">Nature</div>
-      <div class="preset-chip" onclick="applyPreset('rain')">Rain</div>
-      <div class="preset-chip" onclick="stopAllSounds()">Stop All</div>
     </div>
 
     <h2 class="engine-title">Soundscape Studio</h2>
@@ -768,15 +775,18 @@
       <p>YUMEOTO is a minimal ambient sound engine designed for focus, relaxation, and meditation.</p>
       
       <h3>How to Use</h3>
-      <p>• <strong>Select Presets:</strong> Choose from pre-built soundscapes like Focus, Relaxation, Meditation, and more.</p>
+      <p>• <strong>Select Presets:</strong> Choose from pre-built soundscapes like Focus, Relaxation, Meditation, and Sleep.</p>
       <p>• <strong>Mix Custom Sounds:</strong> Click sound cards to enable/disable individual noise types (White, Brown, Pink, Forest).</p>
       <p>• <strong>Adjust Volume:</strong> Use the sliders on each sound card to control individual volumes.</p>
-      <p>• <strong>Stop All:</strong> Click the "Stop All" preset to instantly silence all sounds.</p>
+      <p>• <strong>Click Preset Again:</strong> Click a running preset again to turn it off.</p>
       
       <h3>Tips</h3>
       <p>• Use headphones for the best experience</p>
       <p>• Experiment with different combinations to find your perfect mix</p>
       <p>• This app works offline - no internet required</p>
+
+      <h3>Support & Feedback</h3>
+      <p>Have questions or suggestions? Visit us on <a href="https://github.com/arumajirohz/yumeoto" target="_blank">GitHub</a> for support and to contribute.</p>
       
       <button class="close-modal" onclick="closeHelp()">Close</button>
     </div>
@@ -923,34 +933,44 @@
     document.body.classList.toggle('is-playing', isPlaying);
   }
 
-  function stopAllSounds() {
-    Object.keys(nodes).forEach(soundType => {
-      if (nodes[soundType]) {
-        nodes[soundType].source.stop();
-        nodes[soundType].card.classList.remove('active');
-        delete nodes[soundType];
-      }
-    });
-    updatePlayingStatus();
-  }
-
   function applyPreset(preset) {
-    stopAllSounds();
     const sounds = {
       focus: ['brown', 'pink'],
       relaxation: ['white', 'forest'],
       meditation: ['pink'],
-      sleep: ['brown'],
-      nature: ['forest'],
-      rain: ['white', 'brown']
+      sleep: ['brown']
     };
     
-    if (sounds[preset]) {
-      sounds[preset].forEach(soundType => {
+    // If preset is already running, turn it off
+    const presetSounds = sounds[preset];
+    const isRunning = presetSounds.every(soundType => nodes[soundType]);
+    
+    if (isRunning) {
+      // Turn off all sounds in this preset
+      presetSounds.forEach(soundType => {
+        if (nodes[soundType]) {
+          nodes[soundType].source.stop();
+          nodes[soundType].card.classList.remove('active');
+          delete nodes[soundType];
+        }
+      });
+    } else {
+      // Stop all other sounds and start this preset
+      Object.keys(nodes).forEach(soundType => {
+        if (nodes[soundType]) {
+          nodes[soundType].source.stop();
+          nodes[soundType].card.classList.remove('active');
+          delete nodes[soundType];
+        }
+      });
+      
+      // Start the selected preset
+      presetSounds.forEach(soundType => {
         const card = document.querySelector(`[data-sound="${soundType}"]`);
         if (card) toggleSound(soundType, card);
       });
     }
+    updatePlayingStatus();
   }
 
   document.addEventListener('click', (e) => {
