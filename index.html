@@ -1,2720 +1,551 @@
-<!DOCTYPE  html>  
-<html
- 
-lang="en">
- 
+<!DOCTYPE html>
+<html lang="en">
 <head>
- 
-  
-<meta
- 
-charset="utf-8"
- />
- 
-  
-<meta
- 
-name="viewport"
- 
-content="width=device-width,
- 
-initial-scale=1.0,
- 
-maximum-scale=1.0,
- 
-user-scalable=no"
- />
- 
-  
-<meta
- 
-name="description"
- 
-content="YUMEOTO
- 
-—
- 
-Minimal
- 
-offline
- 
-ambient
- 
-sound
- 
-player
- 
-built
- 
-for
- 
-focus
- 
-and
- 
-calm.">
- 
-  
-<meta
- 
-name="theme-color"
- 
-content="#0f0c13">
- 
-  
-<title>YUMEOTO
- 
-—
- 
-Deep
- 
-Space
- 
-&
- 
-Atmosphere
- 
-Engine</title>
- 
-  
-<style>
- 
-    
-:root
- 
-{
- 
-      
---bg:
- 
-#0f0c13;
- 
-      
---card-bg:
- 
-rgba(31,
- 
-26,
- 
-36,
- 
-0.7);
- 
-      
---card-border:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.12);
- 
-      
---muted:
- 
-#bfb6c9;
- 
-      
---accent:
- 
-#A18BFF;
- 
-      
---accent-hover:
- 
-#b8a6ff;
- 
-      
---accent-glow:
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.25);
- 
-      
---text:
- 
-#ffffff;
- 
-      
---radius:
- 
-18px;
- 
-      
---transition:
- 
-all
- 
-0.3s
- 
-cubic-bezier(0.4,
- 
-0,
- 
-0.2,
- 
-1);
- 
-    
-}
- 
- 
-    
-*
- 
-{
- 
-      
-box-sizing:
- 
-border-box;
- 
-      
-margin:
- 
-0;
- 
-      
-padding:
- 
-0;
- 
-    
-}
- 
- 
-    
-html,
- 
-body
- 
-{
- 
-      
-touch-action:
- 
-manipulation;
- 
-      
-min-height:
- 
-100%;
- 
-    
-}
- 
- 
-    
-body
- 
-{
- 
-      
-font-family:
- 
-system-ui,
- 
--apple-system,
- 
-BlinkMacSystemFont,
- 
-'Segoe
- 
-UI',
- 
-Roboto,
- 
-Inter,
- 
-sans-serif;
- 
-      
-background:
- 
-radial-gradient(circle
- 
-at
- 
-center
- 
-top,
- 
-#1a1423
- 
-0%,
- 
-#0f0c13
- 
-80%);
- 
-      
-background-attachment:
- 
-fixed;
- 
-      
-color:
- 
-var(--muted);
- 
-      
-display:
- 
-flex;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-center;
- 
-      
-overflow-x:
- 
-hidden;
- 
-    
-}
- 
- 
-    
-.app-container
- 
-{
- 
-      
-width:
- 
-100%;
- 
-      
-max-width:
- 
-440px;
- 
-      
-min-height:
- 
-100vh;
- 
-      
-display:
- 
-flex;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-position:
- 
-relative;
- 
-    
-}
- 
- 
-    
-.progress-bar
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-justify-content:
- 
-center;
- 
-      
-gap:
- 
-8px;
- 
-      
-padding-top:
- 
-1.5rem;
- 
-      
-position:
- 
-absolute;
- 
-      
-top:
- 
-0;
- 
-      
-left:
- 
-0;
- 
-      
-right:
- 
-0;
- 
-      
-z-index:
- 
-10;
- 
-    
-}
- 
- 
-    
-.step-dot
- 
-{
- 
-      
-width:
- 
-8px;
- 
-      
-height:
- 
-8px;
- 
-      
-border-radius:
- 
-50%;
- 
-      
-background:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.2);
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.step-dot.active
- 
-{
- 
-      
-width:
- 
-24px;
- 
-      
-border-radius:
- 
-4px;
- 
-      
-background:
- 
-var(--accent);
- 
-    
-}
- 
- 
-    
-.screen
- 
-{
- 
-      
-display:
- 
-none;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-space-between;
- 
-      
-padding:
- 
-4.5rem
- 
-1.5rem
- 
-2.5rem
- 
-1.5rem;
- 
-      
-flex:
- 
-1;
- 
-      
-width:
- 
-100%;
- 
-      
-opacity:
- 
-0;
- 
-      
-transform:
- 
-translateY(12px);
- 
-      
-transition:
- 
-opacity
- 
-0.4s
- 
-ease,
- 
-transform
- 
-0.4s
- 
-ease;
- 
-    
-}
- 
- 
-    
-.screen.active
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-opacity:
- 
-1;
- 
-      
-transform:
- 
-translateY(0);
- 
-    
-}
- 
- 
-    
-h1,
- 
-h2,
- 
-h3
- 
-{
- 
-      
-color:
- 
-var(--text);
- 
-      
-font-weight:
- 
-600;
- 
-      
-letter-spacing:
- 
--0.02em;
- 
-    
-}
- 
- 
-    
-h1
- 
-{
- 
-font-size:
- 
-1.8rem;
- 
-text-align:
- 
-center;
- 
-}
- 
-    
-h2
- 
-{
- 
-font-size:
- 
-1.35rem;
- 
-text-align:
- 
-center;
- 
-}
- 
-    
-h3
- 
-{
- 
-font-size:
- 
-1.05rem;
- 
-}
- 
- 
-    
-p
- 
-{
- 
-      
-font-size:
- 
-0.92rem;
- 
-      
-line-height:
- 
-1.5;
- 
-    
-}
- 
- 
-    
-.glass-card
- 
-{
- 
-      
-background:
- 
-var(--card-bg);
- 
-      
-backdrop-filter:
- 
-blur(16px);
- 
-      
--webkit-backdrop-filter:
- 
-blur(16px);
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-border-radius:
- 
-var(--radius);
- 
-      
-padding:
- 
-1.4rem;
- 
-      
-width:
- 
-100%;
- 
-      
-box-shadow:
- 
-0
- 
-8px
- 
-32px
- 
-0
- 
-rgba(0,
- 
-0,
- 
-0,
- 
-0.37);
- 
-    
-}
- 
- 
-    
-.btn
- 
-{
- 
-      
-background-color:
- 
-var(--accent);
- 
-      
-color:
- 
-#0d0a10;
- 
-      
-border:
- 
-none;
- 
-      
-padding:
- 
-0.95rem
- 
-1.8rem;
- 
-      
-border-radius:
- 
-35px;
- 
-      
-font-size:
- 
-1rem;
- 
-      
-font-weight:
- 
-600;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-width:
- 
-100%;
- 
-      
-transition:
- 
-var(--transition);
- 
-      
-box-shadow:
- 
-0
- 
-4px
- 
-15px
- 
-var(--accent-glow);
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-center;
- 
-      
-gap:
- 
-0.5rem;
- 
-    
-}
- 
- 
-    
-.btn:hover
- 
-{
- 
-      
-background-color:
- 
-var(--accent-hover);
- 
-      
-transform:
- 
-translateY(-2px);
- 
-      
-box-shadow:
- 
-0
- 
-6px
- 
-20px
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.35);
- 
-    
-}
- 
- 
-    
-.btn:active
- 
-{
- 
-      
-transform:
- 
-translateY(0)
- 
-scale(0.98);
- 
-    
-}
- 
- 
-    
-.lang-toggle
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-gap:
- 
-0.5rem;
- 
-      
-flex-wrap:
- 
-wrap;
- 
-      
-justify-content:
- 
-center;
- 
-      
-margin-top:
- 
-0.8rem;
- 
-    
-}
- 
- 
-    
-.lang-btn
- 
-{
- 
-      
-background-color:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.05);
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-color:
- 
-var(--muted);
- 
-      
-padding:
- 
-0.55rem
- 
-1.1rem;
- 
-      
-border-radius:
- 
-25px;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-font-size:
- 
-0.88rem;
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.lang-btn:hover
- 
-{
- 
-      
-border-color:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.3);
- 
-      
-color:
- 
-var(--text);
- 
-    
-}
- 
- 
-    
-.lang-btn.active
- 
-{
- 
-      
-background-color:
- 
-#ffffff;
- 
-      
-color:
- 
-#0f0c13;
- 
-      
-border-color:
- 
-#ffffff;
- 
-      
-font-weight:
- 
-600;
- 
-    
-}
- 
- 
-    
-.input-field
- 
-{
- 
-      
-width:
- 
-100%;
- 
-      
-padding:
- 
-0.95rem
- 
-1.1rem;
- 
-      
-margin-bottom:
- 
-0.9rem;
- 
-      
-border-radius:
- 
-12px;
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-background:
- 
-rgba(0,
- 
-0,
- 
-0,
- 
-0.25);
- 
-      
-color:
- 
-#fff;
- 
-      
-font-size:
- 
-0.95rem;
- 
-      
-outline:
- 
-none;
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.input-field:focus
- 
-{
- 
-      
-border-color:
- 
-var(--accent);
- 
-      
-box-shadow:
- 
-0
- 
-0
- 
-0
- 
-2px
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.2);
- 
-    
-}
- 
- 
-    
-#license-modal
- 
-{
- 
-      
-position:
- 
-fixed;
- 
-      
-top:
- 
-0;
- 
-left:
- 
-0;
- 
-right:
- 
-0;
- 
-bottom:
- 
-0;
- 
-      
-background:
- 
-rgba(0,
- 
-0,
- 
-0,
- 
-0.85);
- 
-      
-backdrop-filter:
- 
-blur(10px);
- 
-      
-display:
- 
-none;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-justify-content:
- 
-center;
- 
-      
-align-items:
- 
-center;
- 
-      
-z-index:
- 
-300;
- 
-      
-padding:
- 
-1.5rem;
- 
-    
-}
- 
- 
-    
-#license-modal.active
- 
-{
- 
-display:
- 
-flex;
- 
-}
- 
- 
-    
-.license-content
- 
-{
- 
-      
-background:
- 
-#1a1423;
- 
-      
-border:
- 
-1px
- 
-solid
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.3);
- 
-      
-border-radius:
- 
-18px;
- 
-      
-padding:
- 
-1.8rem;
- 
-      
-max-width:
- 
-420px;
- 
-      
-max-height:
- 
-75vh;
- 
-      
-overflow-y:
- 
-auto;
- 
-      
-color:
- 
-#bfb6c9;
- 
-      
-font-size:
- 
-0.85rem;
- 
-      
-line-height:
- 
-1.6;
- 
-      
-box-shadow:
- 
-0
- 
-12px
- 
-40px
- 
-rgba(0,0,0,0.6);
- 
-    
-}
- 
- 
-    
-.license-content
- 
-h2
- 
-{
- 
-color:
- 
-var(--accent);
- 
-margin-bottom:
- 
-0.8rem;
- 
-text-align:
- 
-left;
- 
-}
- 
-    
-.license-content
- 
-h3
- 
-{
- 
-color:
- 
-var(--accent);
- 
-margin-top:
- 
-1.2rem;
- 
-font-size:
- 
-0.95rem;
- 
-}
- 
-    
-.license-content
- 
-p
- 
-{
- 
-margin-bottom:
- 
-0.8rem;
- 
-font-size:
- 
-0.85rem;
- 
-}
- 
- 
-    
-.license-close
- 
-{
- 
-      
-background:
- 
-var(--accent);
- 
-      
-color:
- 
-#000;
- 
-      
-border:
- 
-none;
- 
-      
-padding:
- 
-0.75rem
- 
-2rem;
- 
-      
-border-radius:
- 
-25px;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-font-weight:
- 
-600;
- 
-      
-margin-top:
- 
-1.2rem;
- 
-      
-width:
- 
-100%;
- 
-    
-}
- 
- 
-    
-.dash-header
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-justify-content:
- 
-space-between;
- 
-      
-align-items:
- 
-center;
- 
-      
-width:
- 
-100%;
- 
-      
-margin-bottom:
- 
-1.2rem;
- 
-    
-}
- 
- 
-    
-.logo-box
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-gap:
- 
-10px;
- 
-    
-}
- 
- 
-    
-.logo-svg
- 
-{
- 
-      
-width:
- 
-32px;
- 
-      
-height:
- 
-32px;
- 
-      
-fill:
- 
-#fff;
- 
-    
-}
- 
- 
-    
-@keyframes
- 
-eq
- 
-{
- 
-      
-0%
- 
-{
- 
-height:
- 
-5px;
- 
-y:
- 
-12px;
- 
-}
- 
-      
-50%
- 
-{
- 
-height:
- 
-16px;
- 
-y:
- 
-1px;
- 
-}
- 
-      
-100%
- 
-{
- 
-height:
- 
-9px;
- 
-y:
- 
-8px;
- 
-}
- 
-    
-}
- 
- 
-    
-body.is-playing
- 
-.logo-svg
- 
-rect:nth-child(1)
- 
-{
- 
-animation:
- 
-eq
- 
-1s
- 
-infinite
- 
-alternate
- 
-eas[e]-in-out;
- 
-}
- 
-    
-body.is-playing
- 
-.logo-svg
- 
-rect:nth-child(2)
- 
-{
- 
-animation:
- 
-eq
- 
-1.2s
- 
-infinite
- 
-alternate-reverse
- 
-eas[e]-in-out;
- 
-}
- 
-    
-body.is-playing
- 
-.logo-svg
- 
-rect:nth-child(3)
- 
-{
- 
-animation:
- 
-eq
- 
-0.8s
- 
-infinite
- 
-alternate
- 
-eas[e]-in-out;
- 
-}
- 
- 
-    
-.user-profile
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-gap:
- 
-0.75rem;
- 
-    
-}
- 
- 
-    
-.avatar
- 
-{
- 
-      
-width:
- 
-40px;
- 
-      
-height:
- 
-40px;
- 
-      
-border-radius:
- 
-50%;
- 
-      
-background:
- 
-linear-gradient(135deg,
- 
-var(--accent),
- 
-#6b46c1);
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-center;
- 
-      
-font-weight:
- 
-bold;
- 
-      
-color:
- 
-#fff;
- 
-      
-border:
- 
-2px
- 
-solid
- 
-rgba(255,255,255,0.2);
- 
-    
-}
- 
- 
-    
-.icon-btn
- 
-{
- 
-      
-width:
- 
-38px;
- 
-      
-height:
- 
-38px;
- 
-      
-border-radius:
- 
-50%;
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-background:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.05);
- 
-      
-color:
- 
-var(--text);
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-center;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-position:
- 
-relative;
- 
-      
-font-size:
- 
-0.9rem;
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.icon-btn:hover
- 
-{
- 
-background:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.12);
- 
-}
- 
- 
-    
-.badge-dot
- 
-{
- 
-      
-width:
- 
-8px;
- 
-      
-height:
- 
-8px;
- 
-      
-background-color:
- 
-var(--accent);
- 
-      
-border-radius:
- 
-50%;
- 
-      
-position:
- 
-absolute;
- 
-      
-top:
- 
-6px;
- 
-      
-right:
- 
-6px;
- 
-    
-}
- 
- 
-    
-.engine-title
- 
-{
- 
-      
-color:
- 
-var(--accent);
- 
-      
-font-size:
- 
-0.75rem;
- 
-      
-font-weight:
- 
-700;
- 
-      
-margin:
- 
-1.2rem
- 
-0
- 
-0.6rem
- 
-0;
- 
-      
-text-transform:
- 
-uppercase;
- 
-      
-letter-spacing:
- 
-2px;
- 
-      
-opacity:
- 
-0.85;
- 
-      
-text-align:
- 
-left;
- 
-    
-}
- 
- 
-    
-.sound-grid
- 
-{
- 
-      
-display:
- 
-grid;
- 
-      
-grid-template-columns:
- 
-repeat(3,
- 
-1fr);
- 
-      
-gap:
- 
-0.65rem;
- 
-      
-width:
- 
-100%;
- 
-      
-margin-bottom:
- 
-1.2rem;
- 
-    
-}
- 
- 
-    
-.sound-card
- 
-{
- 
-      
-background:
- 
-var(--card-bg);
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-border-radius:
- 
-16px;
- 
-      
-padding:
- 
-0.9rem
- 
-0.7rem;
- 
-      
-display:
- 
-flex;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-justify-content:
- 
-space-between;
- 
-      
-height:
- 
-150px;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-transition:
- 
-var(--transition);
- 
-      
-backdrop-filter:
- 
-blur(12px);
- 
-      
-user-select:
- 
-none;
- 
-    
-}
- 
- 
-    
-.sound-card:active
- 
-{
- 
-transform:
- 
-scale(0.97);
- 
-}
- 
- 
-    
-.sound-card.active
- 
-{
- 
-      
-border-color:
- 
-var(--accent);
- 
-      
-background:
- 
-#2a2430;
- 
-      
-box-shadow:
- 
-0
- 
-6px
- 
-20px
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.18);
- 
-    
-}
- 
- 
-    
-.sound-icon
- 
-svg
- 
-{
- 
-      
-width:
- 
-26px;
- 
-      
-height:
- 
-26px;
- 
-      
-fill:
- 
-var(--muted);
- 
-      
-opacity:
- 
-0.7;
- 
-      
-transition:
- 
-fill
- 
-0.2s,
- 
-opacity
- 
-0.2s;
- 
-    
-}
- 
- 
-    
-.sound-card.active
- 
-.sound-icon
- 
-svg
- 
-{
- 
-      
-fill:
- 
-var(--accent);
- 
-      
-opacity:
- 
-1;
- 
-    
-}
- 
- 
-    
-.sound-name
- 
-{
- 
-      
-font-size:
- 
-0.85rem;
- 
-      
-color:
- 
-#fff;
- 
-      
-font-weight:
- 
-600;
- 
-      
-margin-top:
- 
-0.3rem;
- 
-    
-}
- 
- 
-    
-.sound-desc
- 
-{
- 
-      
-font-size:
- 
-0.7rem;
- 
-      
-color:
- 
-var(--muted);
- 
-      
-opacity:
- 
-0.75;
- 
-      
-line-height:
- 
-1.2;
- 
-    
-}
- 
- 
-    
-.volume-wrap
- 
-{
- 
-      
-opacity:
- 
-0.35;
- 
-      
-pointer-events:
- 
-none;
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-transition:
- 
-opacity
- 
-0.2s;
- 
-      
-margin-top:
- 
-0.4rem;
- 
-    
-}
- 
- 
-    
-.sound-card.active
- 
-.volume-wrap
- 
-{
- 
-      
-opacity:
- 
-1;
- 
-      
-pointer-events:
- 
-auto;
- 
-    
-}
- 
- 
-    
-input[type=range]
- 
-{
- 
-      
--webkit-appearance:
- 
-none;
- 
-      
-height:
- 
-4px;
- 
-      
-background:
- 
-rgba(255,255,255,0.15);
- 
-      
-border-radius:
- 
-999px;
- 
-      
-width:
- 
-100%;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-outline:
- 
-none;
- 
-    
-}
- 
- 
-    
-input[type=range]::-webkit-slider-thumb
- 
-{
- 
-      
--webkit-appearance:
- 
-none;
- 
-      
-width:
- 
-14px;
- 
-      
-height:
- 
-14px;
- 
-      
-border-radius:
- 
-50%;
- 
-      
-background:
- 
-var(--accent);
- 
-      
-transition:
- 
-transform
- 
-0.1s;
- 
-    
-}
- 
- 
-    
-input[type=range]::-webkit-slider-thumb:active
- 
-{
- 
-transform:
- 
-scale(1.25);
- 
-}
- 
- 
-    
-.presets-wrap
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-gap:
- 
-0.5rem;
- 
-      
-margin-bottom:
- 
-1.2rem;
- 
-      
-width:
- 
-100%;
- 
-      
-overflow-x:
- 
-auto;
- 
-      
-padding-bottom:
- 
-0.2rem;
- 
-    
-}
- 
- 
-    
-.preset-chip
- 
-{
- 
-      
-background:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.05);
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-color:
- 
-var(--text);
- 
-      
-padding:
- 
-0.45rem
- 
-0.9rem;
- 
-      
-border-radius:
- 
-20px;
- 
-      
-font-size:
- 
-0.78rem;
- 
-      
-cursor:
- 
-pointer;
- 
-      
-white-space:
- 
-nowrap;
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.preset-chip:hover
- 
-{
- 
-      
-border-color:
- 
-var(--accent);
- 
-      
-background:
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.1);
- 
-    
-}
- 
- 
-    
-.task-list
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-flex-direction:
- 
-column;
- 
-      
-gap:
- 
-0.6rem;
- 
-      
-margin-top:
- 
-0.8rem;
- 
-    
-}
- 
- 
-    
-.task-item
- 
-{
- 
-      
-display:
- 
-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-gap:
- 
-0.6rem;
- 
-      
-padding:
- 
-0.75rem
- 
-0.8rem;
- 
-      
-border-radius:
- 
-14px;
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-background:
- 
-rgba(255,
- 
-255,
- 
-255,
- 
-0.03);
- 
-      
-cursor:
- 
-pointer;
- 
-      
-transition:
- 
-var(--transition);
- 
-    
-}
- 
- 
-    
-.task-item.completed
- 
-{
- 
-      
-border-color:
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.4);
- 
-      
-background:
- 
-rgba(161,
- 
-139,
- 
-255,
- 
-0.08);
- 
-    
-}
- 
- 
-    
-.task-item
- 
-.check
- 
-{
- 
-      
-width:
- 
-18px;
- 
-      
-height:
- 
-18px;
- 
-      
-border-radius:
- 
-50%;
- 
-      
-border:
- 
-1px
- 
-solid
- 
-var(--card-border);
- 
-      
-flex-shrink:
- 
-0;
- 
-      
-display:
- 
-inline-flex;
- 
-      
-align-items:
- 
-center;
- 
-      
-justify-content:
- 
-center;
- 
-      
-font-size:
- 
-11px;
- 
-    
-}
- 
- 
-    
-.task-item.completed
- 
-.check
- 
-{
- 
-      
-background:
- 
-var(--accent);
- 
-      
-border-color:
- 
-var(--accent);
- 
-      
-color:
- 
-#0d0a10;
- 
-      
-font-weight:
- 
-700;
- 
-    
-}
- 
- 
-    
-.footer
- 
-{
- 
-      
-padding:
- 
-1rem
- 
-1.5rem
- 
-1.5rem;
- 
-      
-text-align:
- 
-center;
- 
-      
-font-size:
- 
-0.8rem;
- 
-      
-color:
- 
-rgba(191,
- 
-182,
- 
-201,
- 
-0.45);
- 
-    
-}
- 
-  
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="YUMEOTO — Minimal offline ambient sound player built for focus and calm.">
+  <meta name="theme-color" content="#0f0c13">
+  <title>YUMEOTO — Deep Space & Atmosphere Engine</title>
+  <style>
+    :root {
+      --bg: #0f0c13;
+      --card-bg: rgba(31, 26, 36, 0.7);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --muted: #bfb6c9;
+      --accent: #A18BFF;
+      --accent-hover: #b8a6ff;
+      --accent-glow: rgba(161, 139, 255, 0.25);
+      --text: #ffffff;
+      --radius: 18px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      touch-action: manipulation;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif;
+      background: radial-gradient(circle at center top, #1a1423 0%, #0f0c13 80%);
+      background-attachment: fixed;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 1.5rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: var(--transition);
+    }
+
+    .step-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: var(--accent);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4.5rem 1.5rem 2.5rem 1.5rem;
+      flex: 1;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h1, h2, h3 {
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.35rem;
+      text-align: center;
+    }
+    h3 {
+      font-size: 1.05rem;
+    }
+
+    p {
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      width: 100%;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .btn {
+      background-color: var(--accent);
+      color: #0d0a10;
+      border: none;
+      padding: 0.95rem 1.8rem;
+      border-radius: 35px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(161, 139, 255, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.8rem;
+    }
+
+    .lang-btn {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      padding: 0.55rem 1.1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: var(--transition);
+    }
+
+    .lang-btn:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      color: var(--text);
+    }
+
+    .lang-btn.active {
+      background-color: #ffffff;
+      color: #0f0c13;
+      border-color: #ffffff;
+      font-weight: 600;
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0 0.5rem;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo-svg {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .logo-svg svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .badge-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      top: 6px;
+      right: 6px;
+    }
+
+    .engine-title {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+      text-align: center;
+    }
+
+    .sound-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .sound-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .sound-card:hover {
+      border-color: var(--accent);
+      background: rgba(161, 139, 255, 0.1);
+    }
+
+    .sound-card.active {
+      border-color: var(--accent);
+      background: rgba(161, 139, 255, 0.15);
+      box-shadow: 0 0 20px rgba(161, 139, 255, 0.3);
+    }
+
+    .sound-icon {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 0.8rem;
+      color: var(--accent);
+    }
+
+    .sound-icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .sound-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .vol-slider {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .vol-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .vol-slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .presets-wrap {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .preset-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(161, 139, 255, 0.1);
+    }
+
+    .preset-chip.active {
+      background: var(--accent);
+      color: #0d0a10;
+      border-color: var(--accent);
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .task-item:hover {
+      background: rgba(161, 139, 255, 0.1);
+      border-color: var(--accent);
+    }
+
+    .task-item.completed {
+      opacity: 0.6;
+    }
+
+    .task-item.completed .check {
+      color: var(--accent);
+    }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      margin-bottom: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .input-field::placeholder {
+      color: var(--muted);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    #license-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    #license-modal.active {
+      display: flex;
+    }
+
+    .license-content {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: var(--muted);
+    }
+
+    .license-content h2 {
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .license-content h3 {
+      color: var(--text);
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .license-content p {
+      margin-bottom: 0.8rem;
+      line-height: 1.6;
+    }
+
+    .close-modal {
+      background: var(--accent);
+      color: #0d0a10;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1.5rem;
+      transition: var(--transition);
+    }
+
+    .close-modal:hover {
+      background: var(--accent-hover);
+    }
+
+    body.is-playing {
+      --bg: #1a0d28;
+    }
+
+    @media (max-width: 480px) {
+      .screen {
+        padding: 3.5rem 1rem 2rem 1rem;
+      }
+      .sound-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -2722,8 +553,6 @@ rgba(191,
   <div class="progress-bar">
     <div id="dot-1" class="step-dot active"></div>
     <div id="dot-2" class="step-dot"></div>
-    <div id="dot-3" class="step-dot"></div>
-    <div id="dot-4" class="step-dot"></div>
   </div>
 
   <div id="screen-1" class="screen active">
@@ -2741,26 +570,10 @@ rgba(191,
       </div>
     </div>
 
-    <button class="btn" id="btn-continue" onclick="nextScreen(2)">Continue</button>
+    <button class="btn" id="btn-continue" onclick="nextScreen(2)">Begin</button>
   </div>
 
   <div id="screen-2" class="screen">
-    <div class="glass-card" style="margin-top: 1.5rem; width: 100%;">
-      <h2 id="login-title" style="margin-bottom: 1rem;">Demo Login</h2>
-      <input id="input-username" type="text" class="input-field" placeholder="Username or Email" />
-      <input id="input-password" type="password" class="input-field" placeholder="Password" />
-      <button class="btn" id="btn-login" onclick="handleLogin()" style="margin-top: 0.4rem;">Log In</button>
-    </div>
-
-    <div class="glass-card" style="width: 100%; margin-top: 1rem;">
-      <h3 style="margin-bottom: 0.7rem;">Support & Quick Links</h3>
-      <p style="color: var(--muted);">Need help? This template is designed for support info, login prompts, and onboarding text.</p>
-    </div>
-
-    <button class="btn" onclick="nextScreen(3)">Next</button>
-  </div>
-
-  <div id="screen-3" class="screen">
     <div class="dash-header">
       <div class="logo-box">
         <div class="logo-svg">
@@ -2772,77 +585,59 @@ rgba(191,
         </div>
         <div>
           <div style="color:#fff; font-weight:700; line-height:1;">YUMEOTO</div>
-          <div style="font-size:0.78rem; color: var(--muted);" id="user-greeting">Hello, Alex!</div>
+          <div style="font-size:0.78rem; color: var(--muted);">Atmosphere Engine</div>
         </div>
       </div>
       <button class="icon-btn" onclick="openLicense()">i<div class="badge-dot"></div></button>
     </div>
 
-    <div class="glass-card">
-      <h2 id="ready-title">Your Experience is Ready</h2>
-      <p id="ready-desc" style="margin-top:0.7rem; text-align:center;">Dark mode, sound synthesis, and language preferences configured.</p>
-      <button class="btn" id="btn-dashboard" onclick="nextScreen(4)" style="margin-top: 1rem;">Enter Dashboard</button>
-    </div>
-
-    <h2 class="engine-title" id="engine-heading">Atmosphere Engine</h2>
+    <h2 class="engine-title" id="engine-heading">Soundscape Studio</h2>
     <div class="sound-grid">
-      <div class="sound-card" data-sound="white">
+      <div class="sound-card" data-sound="white" onclick="toggleSound('white', this)">
         <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 4-12 3 14 2-6h1"/></svg></div>
-        <div>
-          <div class="sound-name" id="snd-white-title">White Noise</div>
-          <div class="sound-desc" id="snd-white-desc">Filtered static mask</div>
-        </div>
-        <div class="volume-wrap"><input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.3"></div>
+        <h3>White</h3>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.5" onchange="updateVolume('white', this.value)" />
       </div>
-      <div class="sound-card" data-sound="pink">
-        <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M4 12c4-8 8 8 12 0s4 0 4 0"/></svg></div>
-        <div>
-          <div class="sound-name" id="snd-pink-title">Pink Noise</div>
-          <div class="sound-desc" id="snd-pink-desc">Soft natural rain</div>
-        </div>
-        <div class="volume-wrap"><input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.5"></div>
+
+      <div class="sound-card" data-sound="brown" onclick="toggleSound('brown', this)">
+        <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 4-12 3 14 2-6h1"/></svg></div>
+        <h3>Brown</h3>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.5" onchange="updateVolume('brown', this.value)" />
       </div>
-      <div class="sound-card" data-sound="brown">
-        <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M2 18c6-12 10-2 14-8s6-2 6-2"/></svg></div>
-        <div>
-          <div class="sound-name" id="snd-brown-title">Brown Noise</div>
-          <div class="sound-desc" id="snd-brown-desc">Deep space rumble</div>
-        </div>
-        <div class="volume-wrap"><input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.6"></div>
+
+      <div class="sound-card" data-sound="pink" onclick="toggleSound('pink', this)">
+        <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 4-12 3 14 2-6h1"/></svg></div>
+        <h3>Pink</h3>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.5" onchange="updateVolume('pink', this.value)" />
+      </div>
+
+      <div class="sound-card" data-sound="forest" onclick="toggleSound('forest', this)">
+        <div class="sound-icon"><svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 4-12 3 14 2-6h1"/></svg></div>
+        <h3>Forest</h3>
+        <input type="range" class="vol-slider" min="0" max="1" step="0.01" value="0.5" onchange="updateVolume('forest', this.value)" />
       </div>
     </div>
 
-    <h2 class="engine-title" id="pst-focus">Presets</h2>
     <div class="presets-wrap">
-      <div class="preset-chip" id="pst-rain" onclick="applyPreset('rain')">Rain</div>
+      <div class="preset-chip" id="pst-focus" onclick="applyPreset('focus')">Focus</div>
       <div class="preset-chip" id="pst-space" onclick="applyPreset('space')">Space</div>
-      <div class="preset-chip" onclick="applyPreset('focus')">Focus</div>
       <div class="preset-chip" id="pst-stop" onclick="stopAllSounds()">Stop All</div>
     </div>
 
-    <h2 class="engine-title" id="tasks-title">Daily Tasks</h2>
+    <h2 class="engine-title" id="tasks-title">Session Focus</h2>
     <div class="task-list">
-      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div id="task-1">Tune sound preferences</div></div>
-      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div id="task-2">25 minute focus session</div></div>
-      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div id="task-3">Read GPLv3 license notes</div></div>
+      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div>Tune your soundscape</div></div>
+      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div>25-minute focus session</div></div>
+      <div class="task-item" onclick="toggleTask(this)"><div class="check">✓</div><div>Explore audio presets</div></div>
     </div>
 
     <h2 class="engine-title" id="actions-title">Quick Actions</h2>
     <div class="presets-wrap" style="margin-bottom: 0;">
-      <div class="preset-chip" id="act-1">New Project</div>
-      <div class="preset-chip" id="act-2">Analytics</div>
+      <div class="preset-chip" id="act-1">New Session</div>
+      <div class="preset-chip" id="act-2">Presets</div>
       <div class="preset-chip" id="act-3">Settings</div>
-      <div class="preset-chip" id="act-4" onclick="openLicense()">License</div>
+      <div class="preset-chip" id="act-4" onclick="openLicense()">About</div>
     </div>
-  </div>
-
-  <div id="screen-4" class="screen">
-    <div class="glass-card" style="margin-top: 1.5rem; text-align: center;">
-      <h1>Last Page</h1>
-      <p style="margin-top: 0.8rem; color: var(--muted);">This is the final page added to the preserved template.</p>
-    </div>
-
-    <button class="btn" id="btn-restart" onclick="nextScreen(1)">Restart</button>
   </div>
 
   <div id="license-modal">
@@ -2857,360 +652,183 @@ rgba(191,
       <p>• <strong>Copyleft requirement:</strong> Any modifications or derivative works must also be released under GPLv3.</p>
       <p>• <strong>Source code access:</strong> Recipients of your distributed versions must have access to the source code.</p>
       <p>• <strong>Attribution:</strong> You must provide notice of modifications and include a copy of the license.</p>
-      <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #a0979a;">For the complete license text, visit: <strong>https://www.gnu.org/licenses/gpl-3.0.html</strong></p>
-      <button class="license-close" onclick="closeLicense()">Got it</button>
+      <p style="margin-top: 1rem; font-size: 0.85rem;">For the full GPLv3 license text, visit <a href="https://www.gnu.org/licenses/gpl-3.0.html" style="color: var(--accent);" target="_blank">gnu.org</a></p>
+      <button class="close-modal" onclick="closeLicense()">Close</button>
     </div>
   </div>
-
-  <div class="footer">YUMEOTO — Minimal ambient engine for low-CPU devices.</div>
 </div>
 
 <script>
-    function openLicense() {
-        document.getElementById('license-modal').classList.add('active');
+  const translations = {
+    en: {
+      greeting: 'Hello',
+      welcomeTitle: 'Welcome to YUMEOTO',
+      welcomeSub: 'Minimalist offline ambient sound engine built for focus and calm.',
+    },
+    hi: {
+      greeting: 'नमस्ते',
+      welcomeTitle: 'YUMEOTO में स्वागत है',
+      welcomeSub: 'फोकस और शांति के लिए डिज़ाइन किया गया न्यूनतम ऑफ़लाइन परिवेश ध्वनि इंजन।',
+    },
+    ru: {
+      greeting: 'Привет',
+      welcomeTitle: 'Добро пожаловать в YUMEOTO',
+      welcomeSub: 'Минималистичный автономный движок окружающего звука, предназначенный для концентрации и спокойствия.',
+    },
+    zh: {
+      greeting: '你好',
+      welcomeTitle: '欢迎来到 YUMEOTO',
+      welcomeSub: '为专注和平静而设计的极简离线环境音引擎。',
     }
+  };
 
-    function closeLicense() {
-        document.getElementById('license-modal').classList.remove('active');
-    }
+  let currentLang = 'en';
+  let currentUsername = 'User';
 
-    function showToast(text) {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2200);
-    }
+  function setLang(lang, element) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+    updateTranslations();
+  }
 
-    let currentLang = 'en';
-    let currentUsername = 'Alex';
+  function updateTranslations() {
+    const t = translations[currentLang];
+    document.getElementById('welcome-title').textContent = t.welcomeTitle;
+    document.getElementById('welcome-sub').textContent = t.welcomeSub;
+  }
 
-    const translations = {
-      en: {
-        welcome: 'Welcome to YUMEOTO',
-        welcomeSub: 'Minimalist offline ambient sound engine built for focus and calm.',
-        continue: 'Continue',
-        login: 'Demo Login',
-        userPlaceholder: 'Username or Email',
-        passPlaceholder: 'Password',
-        loginBtn: 'Log In',
-        readyTitle: 'Your Experience is Ready',
-        readyDesc: 'Dark mode, sound synthesis, and language preferences configured.',
-        enterDash: 'Enter Dashboard',
-        greeting: 'Hello',
-        engineHead: 'Atmosphere Engine',
-        whiteTitle: 'White Noise',
-        whiteDesc: 'Filtered static mask',
-        pinkTitle: 'Pink Noise',
-        pinkDesc: 'Soft natural rain',
-        brownTitle: 'Brown Noise',
-        brownDesc: 'Deep space rumble',
-        pstFocus: 'Presets',
-        pstRain: 'Rain',
-        pstSpace: 'Space',
-        pstStop: 'Stop All',
-        tasksTitle: 'Daily Tasks',
-        task1: 'Tune sound preferences',
-        task2: '25 minute focus session',
-        task3: 'Read GPLv3 license notes',
-        actionsTitle: 'Quick Actions',
-        act1: 'New Project',
-        act2: 'Analytics',
-        act3: 'Settings',
-        act4: 'License',
-        restart: 'Restart',
-        toastLang: 'Language changed to English'
-      },
-      hi: {
-        welcome: 'YUMEOTO में आपका स्वागत है',
-        welcomeSub: 'फोकस और शांति के लिए बना ऑफलाइन एंबिएंट साउंड इंजन।',
-        continue: 'जारी रखें',
-        login: 'डेमो लॉगिन',
-        userPlaceholder: 'यूज़रनेम या ईमेल',
-        passPlaceholder: 'पासवर्ड',
-        loginBtn: 'लॉग इन',
-        readyTitle: 'आपका अनुभव तैयार है',
-        readyDesc: 'डार्क मोड, साउंड सिंथेसिस और भाषा सेटिंग लागू हो गई हैं।',
-        enterDash: 'डैशबोर्ड खोलें',
-        greeting: 'नमस्ते',
-        engineHead: 'एंबिएंस इंजन',
-        whiteTitle: 'व्हाइट नॉइज़',
-        whiteDesc: 'फ़िल्टर्ड स्टैटिक मास्क',
-        pinkTitle: 'पिंक नॉइज़',
-        pinkDesc: 'हल्की प्राकृतिक बारिश',
-        brownTitle: 'ब्राउन नॉइज़',
-        brownDesc: 'गहरा अंतरिक्ष गूंज',
-        pstFocus: 'प्रीसेट्स',
-        pstRain: 'बारिश',
-        pstSpace: 'स्पेस',
-        pstStop: 'सब बंद',
-        tasksTitle: 'दैनिक कार्य',
-        task1: 'साउंड पसंद सेट करें',
-        task2: '25 मिनट का फोकस सत्र',
-        task3: 'GPLv3 लाइसेंस नोट पढ़ें',
-        actionsTitle: 'त्वरित कार्य',
-        act1: 'नया प्रोजेक्ट',
-        act2: 'एनालिटिक्स',
-        act3: 'सेटिंग्स',
-        act4: 'लाइसेंस',
-        restart: 'फिर से शुरू करें',
-        toastLang: 'भाषा हिंदी में बदल दी गई'
-      },
-      ru: {
-        welcome: 'Добро пожаловать в YUMEOTO',
-        welcomeSub: 'Минималистичный офлайн-плеер фоновых звуков для концентрации и спокойствия.',
-        continue: 'Продолжить',
-        login: 'Демо Вход',
-        userPlaceholder: 'Имя пользователя или Email',
-        passPlaceholder: 'Пароль',
-        loginBtn: 'Войти',
-        readyTitle: 'Все готово к работе',
-        readyDesc: 'Темный режим, синтез звука и языковые настройки применены.',
-        enterDash: 'Перейти к панели',
-        greeting: 'Привет',
-        engineHead: 'Атмосферный Движок',
-        whiteTitle: 'Белый Шум',
-        whiteDesc: 'Маскирующий статический шум',
-        pinkTitle: 'Розовый Шум',
-        pinkDesc: 'Мягкий природный дождь',
-        brownTitle: 'Коричневый Шум',
-        brownDesc: 'Глубокий гул космоса',
-        pstFocus: 'Фокус',
-        pstRain: 'Дождь',
-        pstSpace: 'Космос',
-        pstStop: 'Выключить всё',
-        tasksTitle: 'Цели на день',
-        task1: 'Настроить параметры звука',
-        task2: '25 минут сессии погружения',
-        task3: 'Ознакомиться с лицензией GPLv3',
-        actionsTitle: 'Быстрые действия',
-        act1: 'Новый проект',
-        act2: 'Аналитика',
-        act3: 'Настройки',
-        act4: 'Лицензия',
-        restart: 'Перезапустить',
-        toastLang: 'Язык изменен на Русский'
-      },
-      zh: {
-        welcome: '欢迎使用 YUMEOTO',
-        welcomeSub: '专为专注与平静设计的极简离线氛围音效引擎。',
-        continue: '继续',
-        login: '演示登录',
-        userPlaceholder: '用户名或电子邮件',
-        passPlaceholder: '密码',
-        loginBtn: '登录',
-        readyTitle: '您的体验已准备就绪',
-        readyDesc: '深色模式、合成音频算法和语言偏好设置已成功配置。',
-        enterDash: '进入仪表板',
-        greeting: '你好',
-        engineHead: '氛围音效引擎',
-        whiteTitle: '白噪音',
-        whiteDesc: '过滤静电遮罩',
-        pinkTitle: '粉红噪音',
-        pinkDesc: '柔和自然雨声',
-        brownTitle: '棕色噪音',
-        brownDesc: '深空低吟轰鸣',
-        pstFocus: '深度专注',
-        pstRain: '雨声掩蔽',
-        pstSpace: '深空冥想',
-        pstStop: '全部静音',
-        tasksTitle: '每日专注目标',
-        task1: '设置音频偏好',
-        task2: '25 分钟深空专注体验',
-        task3: '查看 GPLv3 许可证条款',
-        actionsTitle: '快捷操作',
-        act1: '新建项目',
-        act2: '数据分析',
-        act3: '系统设置',
-        act4: '许可证',
-        restart: '重新开始',
-        toastLang: '语言已更改为中文'
+  function nextScreen(num) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
+    document.getElementById('screen-' + num).classList.add('active');
+    document.getElementById('dot-' + num).classList.add('active');
+    if (num === 2) initAudio();
+  }
+
+  function toggleTask(element) {
+    element.classList.toggle('completed');
+  }
+
+  function openLicense() {
+    document.getElementById('license-modal').classList.add('active');
+  }
+
+  function closeLicense() {
+    document.getElementById('license-modal').classList.remove('active');
+  }
+
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  let audioCtx;
+  let masterGain;
+  let nodes = {};
+  let isPlaying = false;
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new AudioContext();
+    masterGain = audioCtx.createGain();
+    masterGain.connect(audioCtx.destination);
+  }
+
+  function createNoiseBuffer(type) {
+    const bufferSize = 2 * audioCtx.sampleRate;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      if (type === 'brown') {
+        data[i] = (lastOut + (0.02 * white)) / 1.002;
+        lastOut = data[i];
+        data[i] *= 3.5;
+      } else if (type === 'pink') {
+        data[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+      } else {
+        data[i] = white;
       }
-    };
-
-    function setLang(lang, btn) {
-        currentLang = lang;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const t = translations[lang];
-        document.getElementById('welcome-title').textContent = t.welcome;
-        document.getElementById('welcome-sub').textContent = t.welcomeSub;
-        document.getElementById('btn-continue').textContent = t.continue;
-        document.getElementById('login-title').textContent = t.login;
-        document.getElementById('input-username').placeholder = t.userPlaceholder;
-        document.getElementById('input-password').placeholder = t.passPlaceholder;
-        document.getElementById('btn-login').textContent = t.loginBtn;
-        document.getElementById('ready-title').textContent = t.readyTitle;
-        document.getElementById('ready-desc').textContent = t.readyDesc;
-        document.getElementById('btn-dashboard').textContent = t.enterDash;
-        document.getElementById('user-greeting').textContent = `${t.greeting}, ${currentUsername}!`;
-        document.getElementById('engine-heading').textContent = t.engineHead;
-        document.getElementById('snd-white-title').textContent = t.whiteTitle;
-        document.getElementById('snd-white-desc').textContent = t.whiteDesc;
-        document.getElementById('snd-pink-title').textContent = t.pinkTitle;
-        document.getElementById('snd-pink-desc').textContent = t.pinkDesc;
-        document.getElementById('snd-brown-title').textContent = t.brownTitle;
-        document.getElementById('snd-brown-desc').textContent = t.brownDesc;
-        document.getElementById('pst-focus').textContent = t.pstFocus;
-        document.getElementById('pst-rain').textContent = t.pstRain;
-        document.getElementById('pst-space').textContent = t.pstSpace;
-        document.getElementById('pst-stop').textContent = t.pstStop;
-        document.getElementById('tasks-title').textContent = t.tasksTitle;
-        document.getElementById('task-1').textContent = t.task1;
-        document.getElementById('task-2').textContent = t.task2;
-        document.getElementById('task-3').textContent = t.task3;
-        document.getElementById('actions-title').textContent = t.actionsTitle;
-        document.getElementById('act-1').textContent = t.act1;
-        document.getElementById('act-2').textContent = t.act2;
-        document.getElementById('act-3').textContent = t.act3;
-        document.getElementById('act-4').textContent = t.act4;
-        document.getElementById('btn-restart').textContent = t.restart;
-        showToast(t.toastLang);
     }
+    return buffer;
+  }
 
-    function nextScreen(num) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
-        document.getElementById('screen-' + num).classList.add('active');
-        document.getElementById('dot-' + num).classList.add('active');
-        if (num === 4) initAudio();
+  function toggleSound(soundType, card) {
+    initAudio();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
     }
-
-    function handleLogin() {
-        const user = document.getElementById('input-username').value;
-        if (!user.trim()) {
-            showToast('Please enter a username or email.');
-            return;
-        }
-        currentUsername = user.trim();
-        document.getElementById('user-avatar').textContent = currentUsername.charAt(0).toUpperCase();
-        const t = translations[currentLang];
-        document.getElementById('user-greeting').textContent = `${t.greeting}, ${currentUsername}!`;
-        nextScreen(3);
+    if (nodes[soundType]) {
+      nodes[soundType].source.stop();
+      delete nodes[soundType];
+      card.classList.remove('active');
+      updatePlayingStatus();
+    } else {
+      const source = audioCtx.createBufferSource();
+      source.buffer = createNoiseBuffer(soundType);
+      source.loop = true;
+      const gain = audioCtx.createGain();
+      const slider = card.querySelector('.vol-slider');
+      gain.gain.value = parseFloat(slider.value);
+      source.connect(gain);
+      gain.connect(masterGain);
+      source.start();
+      nodes[soundType] = { source, gain, card };
+      card.classList.add('active');
+      updatePlayingStatus();
     }
+  }
 
-    function toggleTask(element) {
-        element.classList.toggle('completed');
+  function updateVolume(soundType, value) {
+    if (nodes[soundType]) {
+      nodes[soundType].gain.gain.value = parseFloat(value);
     }
+  }
 
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-    let masterGain;
-    let nodes = {};
-    let isPlaying = false;
+  function updatePlayingStatus() {
+    const activeSounds = Object.keys(nodes).length;
+    isPlaying = activeSounds > 0;
+    document.body.classList.toggle('is-playing', isPlaying);
+  }
 
-    function initAudio() {
-        if (audioCtx) return;
-        audioCtx = new AudioContext();
-        masterGain = audioCtx.createGain();
-        masterGain.connect(audioCtx.destination);
-    }
-
-    function createNoiseBuffer(type) {
-        const bufferSize = 2 * audioCtx.sampleRate;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        let lastOut = 0.0;
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            if (type === 'brown') {
-                data[i] = (lastOut + (0.02 * white)) / 1.002;
-                lastOut = data[i];
-                data[i] *= 3.5;
-            } else if (type === 'pink') {
-                data[i] = (lastOut + (0.02 * white)) / 1.02;
-                lastOut = data[i];
-                data[i] *= 3.5;
-            } else {
-                data[i] = white;
-            }
-        }
-        return buffer;
-    }
-
-    function toggleSound(soundType, card) {
-        initAudio();
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        if (nodes[soundType]) {
-            nodes[soundType].source.stop();
-            delete nodes[soundType];
-            card.classList.remove('active');
-            updatePlayingStatus();
-        } else {
-            const source = audioCtx.createBufferSource();
-            source.buffer = createNoiseBuffer(soundType);
-            source.loop = true;
-            const gain = audioCtx.createGain();
-            const slider = card.querySelector('.vol-slider');
-            gain.gain.value = parseFloat(slider.value);
-            source.connect(gain);
-            gain.connect(masterGain);
-            source.start();
-            nodes[soundType] = { source, gain, card };
-            card.classList.add('active');
-            updatePlayingStatus();
-        }
-    }
-
-    function updateVolume(soundType, value) {
-        if (nodes[soundType]) {
-            nodes[soundType].gain.gain.value = parseFloat(value);
-        }
-    }
-
-    function updatePlayingStatus() {
-        const activeSounds = Object.keys(nodes).length;
-        isPlaying = activeSounds > 0;
-        document.body.classList.toggle('is-playing', isPlaying);
-    }
-
-    function stopAllSounds() {
-        Object.keys(nodes).forEach(soundType => {
-            nodes[soundType].source.stop();
-            nodes[soundType].card.classList.remove('active');
-        });
-        nodes = {};
-        updatePlayingStatus();
-        showToast('All sound muted');
-    }
-
-    function applyPreset(presetName) {
-        stopAllSounds();
-        initAudio();
-        if (presetName === 'focus') {
-            const whiteCard = document.querySelector('.sound-card[data-sound="white"]');
-            toggleSound('white', whiteCard);
-            showToast('Preset: Deep Focus activated');
-        } else if (presetName === 'rain') {
-            const pinkCard = document.querySelector('.sound-card[data-sound="pink"]');
-            toggleSound('pink', pinkCard);
-            showToast('Preset: Rain Mask activated');
-        } else if (presetName === 'space') {
-            const brownCard = document.querySelector('.sound-card[data-sound="brown"]');
-            toggleSound('brown', brownCard);
-            showToast('Preset: Deep Space activated');
-        }
-    }
-
-    document.querySelectorAll('.sound-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const soundType = card.dataset.sound;
-            toggleSound(soundType, card);
-        });
-        const slider = card.querySelector('.vol-slider');
-        if (slider) {
-            slider.addEventListener('input', (e) => {
-                const soundType = card.dataset.sound;
-                updateVolume(soundType, e.target.value);
-            });
-            slider.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
+  function stopAllSounds() {
+    Object.keys(nodes).forEach(soundType => {
+      if (nodes[soundType]) {
+        nodes[soundType].source.stop();
+        nodes[soundType].card.classList.remove('active');
+        delete nodes[soundType];
+      }
     });
+    updatePlayingStatus();
+  }
+
+  function applyPreset(preset) {
+    stopAllSounds();
+    if (preset === 'focus') {
+      toggleSound('brown', document.querySelector('[data-sound="brown"]'));
+      toggleSound('pink', document.querySelector('[data-sound="pink"]'));
+    } else if (preset === 'space') {
+      toggleSound('white', document.querySelector('[data-sound="white"]'));
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('license-modal');
+    if (e.target === modal) {
+      closeLicense();
+    }
+  });
 </script>
+
 </body>
 </html>
