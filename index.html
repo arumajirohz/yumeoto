@@ -60,7 +60,7 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       padding: 1rem 1.5rem 2.5rem 1.5rem;
       flex: 1;
       width: 100%;
@@ -74,6 +74,80 @@
       display: flex;
       opacity: 1;
       transform: translateY(0);
+    }
+
+    /* Welcome Screen Specific */
+    .welcome-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo-large {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 30px rgba(161, 139, 255, 0.2);
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sound-waves {
+      width: 120px;
+      height: 100px;
+      margin: 2rem 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .wave {
+      width: 8px;
+      background: linear-gradient(to top, var(--accent), rgba(161, 139, 255, 0.3));
+      border-radius: 4px;
+      animation: wave 1s ease-in-out infinite;
+    }
+
+    .wave:nth-child(1) { height: 30%; animation-delay: 0.1s; }
+    .wave:nth-child(2) { height: 60%; animation-delay: 0.2s; }
+    .wave:nth-child(3) { height: 100%; animation-delay: 0.3s; }
+    .wave:nth-child(4) { height: 70%; animation-delay: 0.4s; }
+    .wave:nth-child(5) { height: 40%; animation-delay: 0.5s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.6); opacity: 0.5; }
+      50% { transform: scaleY(1); opacity: 1; }
+    }
+
+    .motto {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), #b8a6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 1.5rem 0;
+      letter-spacing: -0.01em;
+    }
+
+    .description {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 300px;
+      margin-bottom: 2rem;
     }
 
     h1, h2, h3 {
@@ -112,15 +186,16 @@
     }
 
     .btn {
-      background-color: var(--accent);
+      background: linear-gradient(135deg, var(--accent), #b8a6ff);
       color: #0d0a10;
       border: none;
-      padding: 0.95rem 1.8rem;
+      padding: 1rem 2rem;
       border-radius: 35px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
+      max-width: 300px;
       transition: var(--transition);
       box-shadow: 0 4px 15px var(--accent-glow);
       display: flex;
@@ -130,44 +205,12 @@
     }
 
     .btn:hover {
-      background-color: var(--accent-hover);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(161, 139, 255, 0.35);
+      box-shadow: 0 8px 25px rgba(161, 139, 255, 0.4);
     }
 
     .btn:active {
       transform: translateY(0) scale(0.98);
-    }
-
-    .lang-toggle {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 0.8rem;
-    }
-
-    .lang-btn {
-      background-color: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      color: var(--muted);
-      padding: 0.55rem 1.1rem;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      transition: var(--transition);
-    }
-
-    .lang-btn:hover {
-      border-color: rgba(255, 255, 255, 0.3);
-      color: var(--text);
-    }
-
-    .lang-btn.active {
-      background-color: #ffffff;
-      color: #0f0c13;
-      border-color: #ffffff;
-      font-weight: 600;
     }
 
     /* Language Selection Screen */
@@ -193,6 +236,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.8rem;
+      position: relative;
     }
 
     .lang-card:hover {
@@ -531,7 +575,7 @@
     }
 
     .close-modal {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), #b8a6ff);
       color: #0d0a10;
       border: none;
       padding: 0.8rem 1.5rem;
@@ -545,7 +589,8 @@
     }
 
     .close-modal:hover {
-      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(161, 139, 255, 0.35);
     }
 
     body.is-playing {
@@ -562,20 +607,40 @@
       .lang-grid {
         gap: 1rem;
       }
+      .logo-large {
+        font-size: 2.5rem;
+      }
+      .motto {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <!-- Screen 1: Welcome -->
+  <!-- Screen 1: Welcome with Audio Visualization -->
   <div id="screen-1" class="screen active">
-    <div class="glass-card" style="margin-top: 3rem; text-align: center;">
-      <h1 id="welcome-title">Welcome to YUMEOTO</h1>
-      <p id="welcome-sub" style="margin-top: 1rem;">Minimalist offline ambient sound engine built for focus and calm.</p>
+    <div class="welcome-content">
+      <div class="logo-large">YUMEOTO</div>
+      <div class="tagline">Deep Space & Atmosphere Engine</div>
+      
+      <div class="sound-waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+
+      <div class="motto">Focus. Relax. Dream.</div>
+      <div class="description">
+        Minimal ambient soundscapes<br>
+        for a calm mind and deep focus.
+      </div>
     </div>
 
-    <button class="btn" id="btn-continue" onclick="nextScreen(2)" style="margin-top: 3rem; margin-bottom: auto;">Select Language</button>
+    <button class="btn" id="btn-continue" onclick="nextScreen(2)">Continue</button>
   </div>
 
   <!-- Screen 2: Language Selection -->
