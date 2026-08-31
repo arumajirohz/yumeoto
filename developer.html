@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YUMEOTO Web Audio developer playground and technical documentation.">
+  <title>YUMEOTO — Web Audio Developer Playground</title>
+  <style>
+    :root{--bg:#0f0c13;--card:#1f1a24;--line:#3a3145;--text:#fff;--muted:#bfb6c9;--accent:#a18bff}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1a1423 0,#0f0c13 70%);color:var(--muted);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6}
+    main{max-width:920px;margin:auto;padding:48px 22px 72px}h1,h2,h3{color:var(--text)}h1{font-size:clamp(2.4rem,7vw,4.8rem);margin:0}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase}.lead{font-size:1.15rem;max-width:760px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:28px 0}.card{background:rgba(31,26,36,.8);border:1px solid var(--line);border-radius:16px;padding:18px}.card strong{color:var(--text)}pre{overflow:auto;background:#09070c;border:1px solid var(--line);border-radius:14px;padding:18px;color:#e9e3ff}a{color:var(--accent);font-weight:700;text-decoration:none}a:hover{text-decoration:underline}.cta{display:inline-block;margin-top:12px;padding:11px 16px;border:1px solid var(--accent);border-radius:999px}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#292132;border:1px solid var(--line);margin:4px 4px 0 0;color:#e6defc;font-size:.88rem}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Open-source software project</div>
+  <h1>YUMEOTO</h1>
+  <p class="lead">A browser-native Web Audio synthesis engine and developer playground. YUMEOTO demonstrates procedural signal generation, AudioNode graphs, filters, gain staging, LFO modulation, and a zero-dependency vanilla JavaScript architecture.</p>
+
+  <div class="grid">
+    <section class="card"><strong>Web Audio API</strong><br>Uses <code>AudioContext</code>, <code>AudioBufferSourceNode</code>, <code>GainNode</code>, and <code>BiquadFilterNode</code>.</section>
+    <section class="card"><strong>Procedural DSP</strong><br>Generates noise in real time instead of depending on bundled audio assets.</section>
+    <section class="card"><strong>Audio Graphs</strong><br>Connects generated sources through filters, gains, and modulation stages.</section>
+    <section class="card"><strong>Zero Dependencies</strong><br>Pure HTML, CSS, and JavaScript with no build step or runtime libraries.</section>
+  </div>
+
+  <h2>Architecture</h2>
+  <pre>Noise Buffer
+    ↓
+BiquadFilterNode — tone shaping
+    ↓
+LFO → GainNode — modulation
+    ↓
+Master Gain — output control
+    ↓
+AudioContext.destination</pre>
+
+  <h2>Example</h2>
+  <pre>const ctx = new AudioContext();
+const osc = ctx.createOscillator();
+const gain = ctx.createGain();
+
+osc.connect(gain).connect(ctx.destination);
+osc.start();</pre>
+
+  <h2>What this project demonstrates</h2>
+  <span class="tag">Browser audio programming</span><span class="tag">Web Audio API</span><span class="tag">Procedural synthesis</span><span class="tag">AudioNode graphs</span><span class="tag">JavaScript</span><span class="tag">Responsive UI</span><span class="tag">Offline-first</span>
+
+  <p>Explore the interactive ambient engine, inspect the source, or experiment with the architecture.</p>
+  <a class="cta" href="./index.html">Open YUMEOTO engine →</a>
+  <a class="cta" href="https://github.com/arumajirohz/yumeoto" target="_blank" rel="noopener">View source on GitHub →</a>
+</main>
+</body>
+</html>
